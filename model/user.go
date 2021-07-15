@@ -1,10 +1,10 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type User struct {
-	gorm.Model
-	Name      string `gorm:"type:varchar(20);not null"`
-	Telephone string `gorm:"type:varchar(11);not null;unique"`
-	Password  string `gorm:"size:255;not null"`
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Name      string             `bson:"name"`
+	Telephone string             `bson:"telephone,omitempty"`
+	Password  string             `bson:"password,omitempty"`
 }

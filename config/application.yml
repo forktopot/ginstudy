@@ -1,10 +1,10 @@
 server:
     port: 8000
 datasource:
-    driverName: mysql
+    driverName: mongdb
     host: 127.0.0.1
-    port: 3306
+    port: 27017
     database: ginstudy
-    username: root
+    username: ""
     password: ""
     charset: utf8

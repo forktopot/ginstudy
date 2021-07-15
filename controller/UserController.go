@@ -2,6 +2,8 @@ package controller
 
 import (
 	"bytes"
+	"context"
+	"fmt"
 	"ginstudy/common"
 	"ginstudy/dto"
 	"ginstudy/model"
@@ -16,7 +18,8 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -64,7 +67,11 @@ func Register(c *gin.Context) {
 		Password:  string(hasedPassword),
 	}
 
-	DB.Create(&newUser)
+	insertResult, err := DB.InsertOne(context.TODO(), newUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
 
 	//返回结果
 	c.JSON(200, gin.H{"code": 200, "msg": "注册成功"})
@@ -98,8 +105,9 @@ func Login(c *gin.Context) {
 
 	//判断手机号是否存在
 	var user model.User
-	DB.Where("telephone = ?", telephone).First(&user)
-	if user.ID == 0 {
+	err := DB.FindOne(context.Background(), bson.M{"telephone": telephone}).Decode(&user)
+	//user, err := common.FindOne(context.Background(), bson.M{"telephone": telephone}, &user)
+	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "用户不存在"})
 	}
 
@@ -135,10 +143,13 @@ func Info(c *gin.Context) {
 }
 
 //判读是否存在该手机号的用户
-func isTelephoneExist(db *gorm.DB, telephone string) bool {
+func isTelephoneExist(db *mongo.Collection, telephone string) bool {
 	var user model.User
-	db.Where("telephone = ?", telephone).First(&user)
-	if user.ID != 0 {
+
+	filter := bson.D{{"telephone", telephone}}
+
+	err := db.FindOne(context.TODO(), filter).Decode(&user)
+	if err == nil {
 		return true
 	}
 

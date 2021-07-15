@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //创建一个jwt密钥
 var jwtKey = []byte("a_secret_crect")
 
 type Claims struct {
-	UserId uint
+	UserId primitive.ObjectID
 	jwt.StandardClaims
 }
 

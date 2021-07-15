@@ -12,8 +12,17 @@ import (
 
 func main() {
 	InitConfig() //读取配置
+
 	db := common.InitDB()
-	defer db.Close()
+
+	defer common.CloseDB(db)
+
+	//关闭连接
+	// err = db.Disconnect(context.TODO())
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	// 1.创建路由
 	r := gin.Default()
 	r.LoadHTMLGlob("./*.html")

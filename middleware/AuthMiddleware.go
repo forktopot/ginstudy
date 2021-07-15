@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"ginstudy/common"
 	"ginstudy/model"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/mgo.v2/bson"
 )
 
 //认证
@@ -39,10 +41,10 @@ func AuthMiddleware() gin.HandlerFunc {
 		userId := claims.UserId
 		DB := common.GetDB()
 		var user model.User
-		DB.First(&user, userId)
+		err = DB.FindOne(context.Background(), bson.M{"ID": userId}).Decode(&user)
 
 		//判断用户是否存在
-		if user.ID == 0 {
+		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"code": 401, "msg": "权限不足"})
 			c.Abort() //抛弃这一次请求
 			return
