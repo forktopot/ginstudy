@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>www.topgoer.com验证码</title>
+</head>
+<body>
+    <form action="/api/auth/login" method="POST">
+        <input type="text" name="telephone">
+        <input type="text" name="password">
+        <input type="text" name="captcha">
+        <input type="submit" value="Login">
+    </form>
+<img src="/captcha" onclick="this.src='/captcha?v='+Math.random()">
+</body>
+</html>
